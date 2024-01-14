@@ -3,3 +3,5 @@ missingno==0.5.2
 sqlalchemy==2.0.23
 matplotlib==3.8.2
 psycopg2-binary==2.9.9
+apache-airflow==2.8.0
+```
