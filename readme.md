@@ -38,6 +38,6 @@ Este archivo contiene el código de la query que se ejecuta en Redshift para cre
 
 Este archivo contiene la captura de pantalla de la conexión a la base de datos de Redshift desde Dbeaver. Se puede ver la tabla creada con los datos de enfermedades respiratorias.
 
-### Captura de pantalla tabla en Redshift ya cargada
+### Captura de pantalla de la tabla en Redshift ya cargada correspondiente a la entrega 2
 
 Captura de pantalla de la tabla en resdhift con los datos de enfermedades respiratorias ya cargadas en la tabla
