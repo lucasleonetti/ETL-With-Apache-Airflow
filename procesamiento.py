@@ -1,5 +1,9 @@
 import requests
 import pandas as pd
+import missingno as msno
+import matplotlib.pyplot as plt
+import os
+from sqlalchemy import create_engine, text
 
 # llama a la API y obtengo los datos
 def extraccion_datos():
@@ -23,48 +27,37 @@ def visualizacion_datos():
     print(er_df.head(50))
     
     return er_df
-
-import missingno as msno
-
+ 
+# Guardo el dataframe para analizarlo en el siguiente paso
+er_df = visualizacion_datos()
 # analizo los datos faltantes con la libreria missingno
-print(msno.matrix(visualizacion_datos()))
+print(msno.matrix(er_df))
 
-# agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)
+def transformacion_datos():
+    # agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)
+    df_grouped = er_df.groupby(['provincia_nombre', 'evento_nombre', 'anio']).size().reset_index(name='cantidad_casos')
+    df_grouped = df_grouped.sort_values('provincia_nombre', ascending=False)
+    df_grouped.head(50)
 
-df_grouped = er_df.groupby(['provincia_nombre', 'evento_nombre', 'anio']).size().reset_index(name='cantidad_casos')
-df_grouped = df_grouped.sort_values('provincia_nombre', ascending=False)
-df_grouped.head(50)
+    # filtro los datos por provincia en este caso 'Neuquen'
+    df_neuquen = df_grouped[df_grouped['provincia_nombre'] == 'Neuquen']
 
-    
-import matplotlib.pyplot as plt
+    # grafico la cantidad de casos por evento y año en Neuquen
+    df_neuquen.pivot(index='evento_nombre', columns='anio', values='cantidad_casos').plot(kind='bar', figsize=(10, 6))
+    plt.xlabel('Evento')
+    plt.ylabel('Numero de Casos')
+    plt.title('Numero de Casos por Evento y Año en Neuquen')
+    plt.show()
 
-# filtro los datos por provincia en este caso 'Neuquen'
-df_neuquen = df_grouped[df_grouped['provincia_nombre'] == 'Neuquen']
+    # filtro los datos por provincia en este caso 'Cordoba'
+    df_cordoba = df_grouped[df_grouped['provincia_nombre'] == 'Cordoba']
 
-# grafico la cantidad de casos por evento y año en Neuquen
-df_neuquen.pivot(index='evento_nombre', columns='anio', values='cantidad_casos').plot(kind='bar', figsize=(10, 6))
-plt.xlabel('Evento')
-plt.ylabel('Numero de Casos')
-plt.title('Numero de Casos por Evento y Año en Neuquen')
-print(plt.show())
-
-
-# filtro los datos por provincia en este caso 'Cordoba'
-df_neuquen = df_grouped[df_grouped['provincia_nombre'] == 'Cordoba']
-
-# grafico la cantidad de casos por evento y año en Cordoba
-df_neuquen.pivot(index='evento_nombre', columns='anio', values='cantidad_casos').plot(kind='bar', figsize=(10, 6))
-plt.xlabel('Evento')
-plt.ylabel('Numero de Casos')
-plt.title('Numero de Casos por Evento y Año en Neuquen')
-print(plt.show())
-
-# Entregable numero 2
-# Carga de datos a Amazon Redshift
-
-import os
-from sqlalchemy import create_engine, text
-
+    # grafico la cantidad de casos por evento y año en Cordoba
+    df_cordoba.pivot(index='evento_nombre', columns='anio', values='cantidad_casos').plot(kind='bar', figsize=(10, 6))
+    plt.xlabel('Evento')
+    plt.ylabel('Numero de Casos')
+    plt.title('Numero de Casos por Evento y Año en Cordoba')
+    plt.show()
 
 def carga_datos_redshift():
     # importo las variables de entorno
