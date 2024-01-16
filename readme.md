@@ -21,3 +21,9 @@ El proyecto consta de los siguientes archivos y directorios:
 ```sh
 pip install -r requirements.txt
 ```
+
+2. Ejecuta el DAG de Apache Airflow:
+
+```sh
+airflow dags trigger ETL_enfermedades_respiratorias_agudas
+```
