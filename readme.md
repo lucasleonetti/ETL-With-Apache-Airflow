@@ -16,14 +16,12 @@ El proyecto consta de los siguientes archivos y directorios:
 
 ## Cómo ejecutar el proyecto
 
-1. Instala las dependencias de Python con pip:
+1. Clonar el repositorio
 
-```sh
-pip install -r requirements.txt
-```
+2. ejecutar `docker-compose airflow-init` en la raíz del proyecto
 
-2. Ejecuta el DAG de Apache Airflow:
+3. ejecutar `docker-compose up` en la raíz del proyecto
 
-```sh
-airflow dags trigger ETL_enfermedades_respiratorias_agudas
-```
+4. Abrir el navegador en `localhost:8080` y activar el DAG `ETL_enfermedades_respiratorias_agudas`
+
+5. Ejecutar el DAG
