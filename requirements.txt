@@ -1,5 +1,5 @@
 requests==2.31.0
-pandas==2.1.4
+pandas==2.1
 missingno==0.5.2
 sqlalchemy==2.0.23
 matplotlib==3.8.2
