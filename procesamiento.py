@@ -12,11 +12,11 @@ def extraccion_datos():
     
     if response.status_code == 200:
         data = response.json()
+        print("Datos obtenidos correctamente")
         return data
     else:
         return "Error al obtener los datos de la API"
-    
- 
+
 # Guardo el dataframe para analizarlo en el siguiente paso
 er_df = extraccion_datos()
 # analizo los datos faltantes con la libreria missingno
@@ -53,6 +53,15 @@ def carga_datos_redshift():
     # almacenamos el dataframe con los datos transformados en una variable
     df_transformado = transformacion_datos()
 
+    # Obtener el valor máximo de la "cantidad_casos" para cada "provincia_nombre"
+    with conn.connect() as connection:
+        result = connection.execute(text("SELECT provincia_nombre, MAX(cantidad_casos) FROM lucasleone95_coderhouse.eventos_provinciales GROUP BY provincia_nombre"))
+        max_casos_por_provincia = {row['provincia_nombre']: row['max'] for row in result}
+
+    # Filtrar el DataFrame para solo incluir los datos nuevos
+    for provincia, max_casos in max_casos_por_provincia.items():
+        df_transformado = df_transformado[(df_transformado['provincia_nombre'] != provincia) | (df_transformado['cantidad_casos'] > max_casos)]
+
     # subo el dataframe a la base de datos en redshift con los datos transformados
     df_transformado.to_sql(name='eventos_provinciales', con=conn, schema='lucasleone95_coderhouse', if_exists='append', index=False)
 
@@ -61,9 +70,8 @@ def carga_datos_redshift():
         result = conn.connect().execute((text(sql)))
         return pd.DataFrame(result.fetchall(), columns=result.keys())
 
-    query_consult = """SELECT * FROM eventos_provinciales LIMIT 10;"""
+    query_consult = """SELECT * FROM lucasleone95_coderhouse.eventos_provinciales LIMIT 10;"""
 
     print(run_query(query_consult))
-
-
+    print("Datos cargados correctamente en la base de datos")
 
