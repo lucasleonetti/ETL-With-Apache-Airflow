@@ -12,6 +12,19 @@ El proyecto consta de los siguientes archivos y directorios:
 
 - `requirements.txt`: Este archivo lista las dependencias de Python necesarias para ejecutar el proyecto.
 
+## Variables de entorno
+
+En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` con el siguiente contenido:
+
+```bash
+# .env
+POSTGRES_USER=ejemplo-user
+POSTGRES_PASSWORD=ejemplo-password
+POSTGRES_DB=ejemplo-db
+POSTGRES_HOST=ejemplo-host
+POSTGRES_PORT=5432
+```
+
 ## Cómo ejecutar el proyecto
 
 1. Clonar el repositorio
