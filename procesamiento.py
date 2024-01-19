@@ -16,20 +16,9 @@ def extraccion_datos():
     else:
         return "Error al obtener los datos de la API"
     
-def visualizacion_datos():
-    # obtengo los datos de la API
-    data = extraccion_datos()
-
-    # creo un dataframe con los datos
-    er_df = pd.DataFrame(data)
-
-    # muestro los 50 primeros registros del dataframe
-    print(er_df.head(50))
-    
-    return er_df
  
 # Guardo el dataframe para analizarlo en el siguiente paso
-er_df = visualizacion_datos()
+er_df = extraccion_datos()
 # analizo los datos faltantes con la libreria missingno
 print(msno.matrix(er_df))
 
