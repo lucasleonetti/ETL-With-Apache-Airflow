@@ -7,7 +7,7 @@ from procesamiento import extraccion_datos, transformacion_datos, carga_datos_re
 with DAG(
     dag_id='ETL_enfermedades_respiratorias_agudas',
     description='DAG para extraer, transformar y cargar los datos de las enfermedades respiratorias agudas',
-    start_date=datetime(2024, 1,17),
+    start_date=datetime(2024, 1,1),
     schedule_interval='@daily', # ejecutar cada día
     ) as dag:
 
