@@ -19,8 +19,6 @@ def extraccion_datos():
 
 # Guardo el dataframe para analizarlo en el siguiente paso
 er_df = extraccion_datos()
-# analizo los datos faltantes con la libreria missingno
-print(msno.matrix(er_df))
 
 def transformacion_datos():
     # agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)

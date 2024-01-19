@@ -1,2 +1,4 @@
 # environment variables
 *.env
+# logs
+logs/

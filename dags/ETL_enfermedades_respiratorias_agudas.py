@@ -5,11 +5,10 @@ from procesamiento import extraccion_datos, transformacion_datos, carga_datos_re
 
 # Definir el DAG
 with DAG(
-    dag_id='enfermedades_respiratorias_agudas',
-    owner='Lucas Leonetti',
+    dag_id='ETL_enfermedades_respiratorias_agudas',
     description='DAG para extraer, transformar y cargar los datos de las enfermedades respiratorias agudas',
-    start_date=datetime(2023, 10,31),
-    schedule_interval='0 0 * * *'  # Ejecuta el DAG cada día a la medianoche
+    start_date=datetime(2024, 1,17),
+    schedule_interval='@daily', # ejecutar cada día
     ) as dag:
 
 # Definir los operadores
@@ -34,6 +33,6 @@ with DAG(
         dag=dag
     )
 
-# Definir las dependencias
+# Definir 
 extraccion_datos_operator >> transformacion_datos_operator
 transformacion_datos_operator >> carga_datos_redshift_operator
