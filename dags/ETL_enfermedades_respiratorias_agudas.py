@@ -23,12 +23,14 @@ with DAG(
     transformacion_datos_operator = PythonOperator(
         task_id='transformacion_datos',
         python_callable=transformacion_datos,
+        depends_on_past=True,
         dag=dag
     )
 
     carga_datos_redshift_operator = PythonOperator(
         task_id='carga_datos_redshift',
         python_callable=carga_datos_redshift,
+        depends_on_past=True,
         dag=dag
     )
 
