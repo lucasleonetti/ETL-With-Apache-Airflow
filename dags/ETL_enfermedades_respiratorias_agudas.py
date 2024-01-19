@@ -33,4 +33,5 @@ with DAG(
     )
 
 # Definir las dependencias
-extraccion_datos_operator >> transformacion_datos_operator >> carga_datos_redshift_operator
+extraccion_datos_operator >> transformacion_datos_operator
+transformacion_datos_operator >> carga_datos_redshift_operator
