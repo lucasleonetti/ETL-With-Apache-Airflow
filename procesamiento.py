@@ -37,35 +37,18 @@ def transformacion_datos():
     # agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)
     df_grouped = er_df.groupby(['provincia_nombre', 'evento_nombre', 'anio']).size().reset_index(name='cantidad_casos')
     df_grouped = df_grouped.sort_values('provincia_nombre', ascending=False)
-    df_grouped.head(50)
 
-    # filtro los datos por provincia en este caso 'Neuquen'
-    df_neuquen = df_grouped[df_grouped['provincia_nombre'] == 'Neuquen']
-
-    # grafico la cantidad de casos por evento y año en Neuquen
-    df_neuquen.pivot(index='evento_nombre', columns='anio', values='cantidad_casos').plot(kind='bar', figsize=(10, 6))
-    plt.xlabel('Evento')
-    plt.ylabel('Numero de Casos')
-    plt.title('Numero de Casos por Evento y Año en Neuquen')
-    plt.show()
-
-    # filtro los datos por provincia en este caso 'Cordoba'
-    df_cordoba = df_grouped[df_grouped['provincia_nombre'] == 'Cordoba']
-
-    # grafico la cantidad de casos por evento y año en Cordoba
-    df_cordoba.pivot(index='evento_nombre', columns='anio', values='cantidad_casos').plot(kind='bar', figsize=(10, 6))
-    plt.xlabel('Evento')
-    plt.ylabel('Numero de Casos')
-    plt.title('Numero de Casos por Evento y Año en Cordoba')
-    plt.show()
+    # retorno el dataframe agrupado y ordenado
+    return df_grouped
 
 def carga_datos_redshift():
+    
     # importo las variables de entorno
-    REDSHIFT_HOST = os.environ["HOST"]
-    REDSHIFT_USER = os.environ["USER"]
-    REDSHIFT_PASSWORD = os.environ["PASSWORD"]
-    REDSHIFT_PORT = os.environ["PORT"]
-    REDSHIFT_DB = os.environ["DBNAME"]
+    REDSHIFT_HOST = os.getenv["HOST"]
+    REDSHIFT_USER = os.getenv["USER"]
+    REDSHIFT_PASSWORD = os.getenv["PASSWORD"]
+    REDSHIFT_PORT = os.getenv["PORT"]
+    REDSHIFT_DB = os.getenv["DBNAME"]
 
     # conecto a la base de datos
     conn = create_engine(f"postgresql://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}")
@@ -78,15 +61,18 @@ def carga_datos_redshift():
     except Exception as e:
         print("Error al conectar a la base de datos:", e)
 
-    # subo el dataframe a la base de datos en redshift en lotes de 1000 registros debido al tamaño del dataframe (+- 66.000 registros)
-    er_df.to_sql(name='seguimiento_enfermedades_respiratorias', con=conn, schema='lucasleone95_coderhouse', if_exists='replace', index=False, chunksize=1000)
+    # almacenamos el dataframe con los datos transformados en una variable
+    df_transformado = transformacion_datos()
 
-    # consulto la base de datos
+    # subo el dataframe a la base de datos en redshift con los datos transformados
+    df_transformado.to_sql(name='eventos_provinciales', con=conn, schema='lucasleone95_coderhouse', if_exists='append', index=False)
+
+    # consulto la base de datos para verificar que se haya subido correctamente
     def run_query(sql):
         result = conn.connect().execute((text(sql)))
         return pd.DataFrame(result.fetchall(), columns=result.keys())
 
-    query_consult = """SELECT * FROM seguimiento_enfermedades_respiratorias LIMIT 10;"""
+    query_consult = """SELECT * FROM eventos_provinciales LIMIT 10;"""
 
     print(run_query(query_consult))
 
