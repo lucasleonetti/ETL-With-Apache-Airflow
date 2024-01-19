@@ -6,8 +6,6 @@ Este proyecto realiza la extracción, transformación y carga (ETL) de datos de 
 
 El proyecto consta de los siguientes archivos y directorios:
 
-- `enfermedades_respiratorias.ipynb`: Este archivo Jupyter Notebook contiene el código para la extracción de datos, transformación y visualización. El mismo código se encuentra en el archivo `procesamiento.py` pero es presentado de igual manera en un Jupyter Notebook para facilitar la visualización de los resultados.
-
 - `procesamiento.py`: Este archivo Python contiene las funciones utilizadas para la extracción, transformación y carga de los datos.
 
 - `dags/ETL_enfermedades_respiratorias_agudas.py`: Este archivo define el DAG (Directed Acyclic Graph) para Apache Airflow, que automatiza y programa la ejecución de las tareas de ETL.
