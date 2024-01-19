@@ -8,7 +8,7 @@ dag = DAG(
     dag_id='enfermedades_respiratorias_agudas',
     owner='Lucas Leonetti',
     description='DAG para extraer, transformar y cargar los datos de las enfermedades respiratorias agudas',
-    start_date=datetime(2023, 12,31),
+    start_date=datetime(2023, 10,31),
     schedule_interval='0 0 * * *'  # Ejecuta el DAG cada día a la medianoche
 )
 
