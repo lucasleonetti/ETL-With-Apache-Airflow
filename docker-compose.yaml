@@ -110,11 +110,11 @@ services:
   airflow:
     image: apache/airflow:2.8.0
     environment:
-      - REDSHIFT_USERNAME=${REDSHIFT_USERNAME}
-      - REDSHIFT_PASSWORD=${REDSHIFT_PASSWORD}
-      - REDSHIFT_HOST=${REDSHIFT_HOST}
-      - REDSHIFT_PORT=${REDSHIFT_PORT}
-      - REDSHIFT_DB=${REDSHIFT_DB}
+      - REDSHIFT_USERNAME=${USER}
+      - REDSHIFT_PASSWORD=${PASSWORD}
+      - REDSHIFT_HOST=${HOST}
+      - REDSHIFT_PORT=${PORT}
+      - REDSHIFT_DB=${DBNAME}
 
   airflow-webserver:
     <<: *airflow-common
