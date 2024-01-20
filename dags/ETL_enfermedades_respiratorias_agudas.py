@@ -1,13 +1,23 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from datetime import datetime
+from datetime import datetime, timedelta
 from procesamiento import extraccion_datos, transformacion_datos, carga_datos_redshift
+
+
+default_args = {
+    'owner': 'lucasleonetti',
+    'start_date': datetime(2024, 1,10),
+    'retries': 2,
+    'retry_delay': timedelta(minutes=3),
+    'email_on_failure': False,
+    'email_on_retry': False,
+}
 
 # Definir el DAG
 with DAG(
+    default_args=default_args,
     dag_id='ETL_enfermedades_respiratorias_agudas',
     description='DAG para extraer, transformar y cargar los datos de las enfermedades respiratorias agudas',
-    start_date=datetime(2024, 1,1),
     schedule_interval='@daily', # ejecutar cada día
     ) as dag:
 
