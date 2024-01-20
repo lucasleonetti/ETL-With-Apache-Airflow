@@ -6,7 +6,7 @@ Este proyecto realiza la extracción, transformación y carga (ETL) de datos de 
 
 El proyecto consta de los siguientes archivos y directorios:
 
-- `procesamiento.py`: Este archivo Python contiene las funciones utilizadas para la extracción, transformación y carga de los datos.
+- `dags/procesamiento.py`: Este archivo Python contiene las funciones utilizadas para la extracción, transformación y carga de los datos.
 
 - `dags/ETL_enfermedades_respiratorias_agudas.py`: Este archivo define el DAG (Directed Acyclic Graph) para Apache Airflow, que automatiza y programa la ejecución de las tareas de ETL.
 
@@ -14,7 +14,7 @@ El proyecto consta de los siguientes archivos y directorios:
 
 ## Variables de entorno
 
-En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` con el siguiente contenido:
+En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` el cual contendra las credenciales de acceso a tu base de datos con el siguiente contenido:
 
 ```bash
 # .env
