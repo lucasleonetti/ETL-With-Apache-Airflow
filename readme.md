@@ -29,10 +29,12 @@ POSTGRES_PORT=5432
 
 1. Clonar el repositorio
 
-2. ejecutar `docker-compose airflow-init` en la raíz del proyecto
+2. ejecutar `docker compose build` en la raíz del proyecto para construir la imagen de nuestro proyecto en Docker e instalar las dependencias de Python
 
-3. ejecutar `docker-compose up` en la raíz del proyecto
+3. ejecutar `docker compose airflow-init` en la raíz del proyecto
 
-4. Abrir el navegador en `localhost:8080` y activar el DAG `ETL_enfermedades_respiratorias_agudas`
+4. ejecutar `docker compose up` en la raíz del proyecto
 
-5. Ejecutar el DAG
+5. Abrir el navegador en `localhost:8080` y activar el DAG `ETL_enfermedades_respiratorias_agudas`
+
+6. Ejecutar el DAG
