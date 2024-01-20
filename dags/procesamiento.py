@@ -13,14 +13,13 @@ def extraccion_datos():
     if response.status_code == 200:
         data = response.json()
         print("Datos obtenidos correctamente")
-        return data
+        return pd.DataFrame(data) # retorno un dataframe con los datos
     else:
         return "Error al obtener los datos de la API"
 
-# Guardo el dataframe para analizarlo en el siguiente paso
-er_df = extraccion_datos()
-
 def transformacion_datos():
+    er_df = extraccion_datos()
+    
     # agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)
     df_grouped = er_df.groupby(['provincia_nombre', 'evento_nombre', 'anio']).size().reset_index(name='cantidad_casos')
     df_grouped = df_grouped.sort_values('provincia_nombre', ascending=False)
