@@ -19,6 +19,7 @@ with DAG(
     dag_id='ETL_enfermedades_respiratorias_agudas',
     description='DAG para extraer, transformar y cargar los datos de las enfermedades respiratorias agudas',
     schedule_interval='@daily', # ejecutar cada día
+    max_active_runs=1, # ejecutar solo un DAG a la vez
     ) as dag:
 
 # Definir los operadores
