@@ -30,11 +30,11 @@ def transformacion_datos():
 def carga_datos_redshift():
     
     # importo las variables de entorno
-    REDSHIFT_HOST = os.environ["HOST"]
-    REDSHIFT_USER = os.environ["USER"]
-    REDSHIFT_PASSWORD = os.environ["PASSWORD"]
-    REDSHIFT_PORT = os.environ["PORT"]
-    REDSHIFT_DB = os.environ["DBNAME"]
+    REDSHIFT_HOST = os.getenv("HOST")
+    REDSHIFT_USER = os.getenv("USER")
+    REDSHIFT_PASSWORD = os.getenv("PASSWORD")
+    REDSHIFT_PORT = os.getenv("PORT")
+    REDSHIFT_DB = os.getenv("DBNAME")
 
     # conecto a la base de datos
     conn = create_engine(f"postgresql://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}")
