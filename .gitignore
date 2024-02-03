@@ -4,5 +4,5 @@
 logs/
 
 # python
-__pycache__/
+dags/__pycache__/
 *.pyc
