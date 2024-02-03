@@ -6,28 +6,32 @@ import os
 from sqlalchemy import create_engine, text
 
 # llama a la API y obtengo los datos
-def extraccion_datos():
+def extraccion_datos(**kwargs):
     url = "http://datos.salud.gob.ar/dataset/c553d917-36f4-4063-ac02-1686a9120e1c/resource/26c85a05-d4e3-4124-b7d2-e087a6cc5f24/download/vigilancia-de-infecciones-respiratorias-agudas.json"
     response = requests.get(url)
     
     if response.status_code == 200:
         data = response.json()
         print("Datos obtenidos correctamente")
-        return pd.DataFrame(data) # retorno un dataframe con los datos
+        pd.DataFrame(data) # convierto los datos en un dataframe
     else:
         return "Error al obtener los datos de la API"
+    
+    # guardo los datos en un xcom para poder utilizarlos en el siguiente paso
+    kwargs['ti'].xcom_push(key='datos', value=data)
 
-def transformacion_datos():
-    er_df = extraccion_datos()
+def transformacion_datos(**kwargs):
+    # obtengo los datos del xcom
+    er_df = kwargs['ti'].xcom_pull(key='datos', task_ids='extraccion_datos_operator')
     
     # agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)
     df_grouped = er_df.groupby(['provincia_nombre', 'evento_nombre', 'anio']).size().reset_index(name='cantidad_casos')
     df_grouped = df_grouped.sort_values('provincia_nombre', ascending=False)
 
-    # retorno el dataframe agrupado y ordenado
-    return df_grouped
+    # guardo los datos transformados en un xcom para poder utilizarlos en el siguiente paso
+    kwargs['ti'].xcom_push(key='datos_transformados', value=df_grouped)
 
-def carga_datos_redshift():
+def carga_datos_redshift(**kwargs):
     
     # importo las variables de entorno
     REDSHIFT_HOST = os.getenv("HOST")
@@ -47,15 +51,15 @@ def carga_datos_redshift():
     except Exception as e:
         print("Error al conectar a la base de datos:", e)
 
-    # almacenamos el dataframe con los datos transformados en una variable
-    df_transformado = transformacion_datos()
+    # obtengo los datos transformados del xcom
+    df_transformado = kwargs['ti'].xcom_pull(key='datos_transformados', task_ids='transformacion_datos_operator')
 
-    # Obtener el valor máximo de la "cantidad_casos" para cada "provincia_nombre"
+    # Obtener el valor máximo de la "cantidad_casos" para cada "provincia_nombre" en la tabla "eventos_provinciales"
     with conn.connect() as connection:
         result = connection.execute(text("SELECT provincia_nombre, MAX(cantidad_casos) FROM lucasleone95_coderhouse.eventos_provinciales GROUP BY provincia_nombre"))
         max_casos_por_provincia = {row['provincia_nombre']: row['max'] for row in result}
 
-    # Filtrar el DataFrame para solo incluir los datos nuevos
+    # Filtrar el DataFrame para solo incluir los datos nuevos que superen el valor máximo de "cantidad_casos" para cada "provincia_nombre"
     for provincia, max_casos in max_casos_por_provincia.items():
         df_transformado = df_transformado[(df_transformado['provincia_nombre'] != provincia) | (df_transformado['cantidad_casos'] > max_casos)]
 
