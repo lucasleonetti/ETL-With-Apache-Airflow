@@ -13,12 +13,12 @@ def extraccion_datos(**kwargs):
     if response.status_code == 200:
         data = response.json()
         print("Datos obtenidos correctamente")
-        pd.DataFrame(data) # convierto los datos en un dataframe
+        data_frame= pd.DataFrame(data) # convierto los datos en un dataframe
     else:
         return "Error al obtener los datos de la API"
     
     # guardo los datos en un xcom para poder utilizarlos en el siguiente paso
-    kwargs['ti'].xcom_push(key='datos', value=data)
+    kwargs['ti'].xcom_push(key='datos', value=data_frame)
 
 def transformacion_datos(**kwargs):
     # obtengo los datos del xcom
