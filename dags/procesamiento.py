@@ -1,3 +1,7 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import json
+import smtplib
 import requests
 import pandas as pd
 import missingno as msno
@@ -81,3 +85,60 @@ def carga_datos_redshift(**kwargs):
     print(run_query(query_consult))
     print("Datos cargados correctamente en la base de datos")
 
+def leer_threshold():
+    with open("../thresholds.json", "r") as file:
+        threshold = json.load(file)
+    return threshold
+
+def enviar_alerta_por_email(asunto,mensaje,destinatario):
+    
+    mi_correo = os.getenv("EMAIL")
+    mi_password = os.getenv("PASSWORD_EMAIL")
+    
+    # Crear el objeto mensaje
+    msg = MIMEMultipart()
+    msg['From'] = mi_correo
+    msg['To'] = destinatario
+    msg['Subject'] = asunto
+
+    # Agregar el mensaje al cuerpo del correo
+    msg.attach(MIMEText(mensaje, 'plain'))
+    
+    # Crear el servidor
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(mi_correo, mi_password)
+    text = msg.as_string()
+    server.sendmail(mi_correo, destinatario, text)
+    server.quit() 
+    
+
+def procesar_datos():
+     # importo las variables de entorno
+    REDSHIFT_HOST = os.getenv("HOST")
+    REDSHIFT_USER = os.getenv("USER")
+    REDSHIFT_PASSWORD = os.getenv("PASSWORD")
+    REDSHIFT_PORT = os.getenv("PORT")
+    REDSHIFT_DB = os.getenv("DBNAME")
+
+    # conecto a la base de datos
+    conn = create_engine(f"postgresql://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}")
+    
+    # Creo un cursor para ejecutar la consulta
+    cursor = conn.cursor()
+    
+    # consulta SQL que obtiene la cantidad de casos por anio
+    query = """
+    SELECT SUM(cantidad_casos) FROM eventos_provinciales
+    """
+    
+    # ejecuto la consulta
+    cursor.execute(query)
+    suma_datos = cursor.fetchone()[0]
+    
+    # Luego de obtener la suma, verificamos los thresholds y enviamos un email si se supera
+    threshold = leer_threshold()
+    if suma_datos > threshold['maxCasosPorAnio']:
+        enviar_alerta_por_email("Alerta de procesamiento:", "El numero de casos sobrepaso el umbral de los 20.000 casos de enfermedades respiratorias agudas en Argentina","lucasleone95@gmail.com")
+                                
+    
