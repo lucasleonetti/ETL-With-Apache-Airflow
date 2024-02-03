@@ -12,13 +12,15 @@ El proyecto consta de los siguientes archivos y directorios:
 
 - `requirements.txt`: Este archivo lista las dependencias de Python necesarias para ejecutar el proyecto.
 
-- `screenshots/`: Este directorio contiene capturas de pantalla de la ejecución del proyecto.
+- `screenshots/`: Este directorio contiene capturas de pantalla de la ejecución en distintas etapas del proceso.
 
 - `docker-compose.yml`: Este archivo define los servicios de Docker necesarios para ejecutar el proyecto.
 
 - `Dockerfile`: Este archivo define la imagen de Docker que se utilizará para ejecutar enuestro proyecto en un contenedor de Docker.  
 
 - `airflow.cfg`: Este archivo contiene la configuración de Apache Airflow. Como definir el executor, el directorio de almacenamiento de los logs, el directorio de almacenamiento de los DAGs, entre otros.
+
+- `thresholds.json`: Este archivo contiene los umbrales criticos para el envio de emails.
 
 ## Variables de entorno
 
