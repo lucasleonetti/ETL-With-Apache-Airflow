@@ -4,6 +4,11 @@ import missingno as msno
 import matplotlib.pyplot as plt
 import os
 from sqlalchemy import create_engine, text
+import requests
+import pandas as pd
+import missingno as msno
+
+import matplotlib.pyplot as plt
 
 # llama a la API y obtengo los datos
 def extraccion_datos(**kwargs):
@@ -22,7 +27,7 @@ def extraccion_datos(**kwargs):
 
 def transformacion_datos(**kwargs):
     # obtengo los datos del xcom
-    er_df = kwargs['ti'].xcom_pull(key='datos', task_ids='extraccion_datos_operator')
+    er_df = kwargs['ti'].xcom_pull(key='datos', task_ids='extraccion_datos')
     
     # agrupo los datos por provincia, evento y anio y muestra la cantidad de casos (primeros 50)
     df_grouped = er_df.groupby(['provincia_nombre', 'evento_nombre', 'anio']).size().reset_index(name='cantidad_casos')
@@ -52,7 +57,7 @@ def carga_datos_redshift(**kwargs):
         print("Error al conectar a la base de datos:", e)
 
     # obtengo los datos transformados del xcom
-    df_transformado = kwargs['ti'].xcom_pull(key='datos_transformados', task_ids='transformacion_datos_operator')
+    df_transformado = kwargs['ti'].xcom_pull(key='datos_transformados', task_ids='transformacion_datos')
 
     # Obtener el valor máximo de la "cantidad_casos" para cada "provincia_nombre" en la tabla "eventos_provinciales"
     with conn.connect() as connection:
