@@ -49,7 +49,7 @@ El flujo de trabajo del proyecto es el siguiente:
 
 2. ejecutar `docker compose build` en la raíz del proyecto para construir la imagen de nuestro proyecto en Docker e instalar las dependencias de Python
 
-3. ejecutar `docker compose airflow-init` en la raíz del proyecto
+3. ejecutar `docker compose up airflow-init` en la raíz del proyecto
 
 4. ejecutar `docker compose up` en la raíz del proyecto
 
