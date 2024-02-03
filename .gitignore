@@ -2,3 +2,7 @@
 *.env
 # logs
 logs/
+
+# python
+__pycache__/
+*.pyc
