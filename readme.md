@@ -24,7 +24,9 @@ El proyecto consta de los siguientes archivos y directorios:
 
 ## Variables de entorno
 
-En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` el cual contendra las credenciales de acceso a tu base de datos y del controlador de envio de emails para las alertas, la direccion de email del destinatario que recibira la alerta. El archivo `.env` deberá tener el siguiente formato:
+En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` el cual contendra las credenciales de acceso a tu base de datos y del controlador de envio de emails para las alertas, la direccion de email del destinatario que recibira la alerta.
+
+El archivo `.env` deberá tener el siguiente formato:
 
 ```bash
 # .env
@@ -45,19 +47,25 @@ El flujo de trabajo del proyecto es el siguiente:
 1. El DAG `ETL_enfermedades_respiratorias_agudas` se ejecuta diariamente a las 00:00 hs.
 2. La tarea `extraccion_datos` extrae los datos de enfermedades respiratorias agudas del Ministerio de Salud de la Nación Argentina.
 3. La tarea `transformacion_datos` transforma los datos extraídos.
-4. La tarea `carga_datos_redshift` carga los datos transformados en una base de datos de Amazon Redshift.
-5. En el caso de que los datos sobrepasen un umbral critico (en nuestro caso, la cantidad de casos de enfermedades respiratorias agudas), se envía un email a los destinatarios especificados en la tarea `enviar_email` con un reporte de la cantidad de casos de enfermedades respiratorias agudas.
+4. La tarea `carga_datos_redshift` carga los datos transformados en una base de datos de Amazon Redshift y evaluamos si la cantidad de casos de enfermedades respiratorias agudas supera un umbral critico.
+5. En el caso de que los datos sobrepasen un umbral critico (en nuestro caso, la cantidad de casos de enfermedades respiratorias agudas), se envía un email a los destinatarios especificados en la tarea `enviar_email` con un reporte de la cantidad de casos.
 
 ## Cómo ejecutar el proyecto
 
-1. Clonar el repositorio
+1. Clonar el repositorio con `git clone [URL]`
 
 2. ejecutar `docker compose build` en la raíz del proyecto para construir la imagen de nuestro proyecto en Docker e instalar las dependencias de Python
 
-3. ejecutar `docker compose up airflow-init` en la raíz del proyecto
+3. ejecutar `docker compose up airflow-init` en la raíz del proyecto para inicializar la base de datos de Apache Airflow (esto solo es necesario la primera vez que ejecutas el proyecto).
 
-4. ejecutar `docker compose up` en la raíz del proyecto
+4. ejecutar `docker compose up` en la raíz del proyecto para iniciar el proyecto en un contenedor de Docker.
 
 5. Abrir el navegador en `localhost:8080` y activar el DAG `ETL_enfermedades_respiratorias_agudas`
 
 6. Ejecutar el DAG
+
+## _Importante_
+
+- Algunos servicios de email como Gmail requieren que habilites el acceso a aplicaciones con una contraseña de aplicación. Puedes obtener más información [aquí](https://support.google.com/accounts/answer/185833?hl=es).
+  
+- En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las variables de entorno mencionadas anteriormente en el archivo `.env` en el directorio raíz del proyecto que define las credenciales de acceso a la base de datos y del controlador de envio de emails para las alertas, la direccion de email del destinatario que recibira la alerta.
