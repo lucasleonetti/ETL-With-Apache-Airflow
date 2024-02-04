@@ -79,7 +79,7 @@ def carga_datos_redshift(**kwargs):
     procesar_datos()
 
 def leer_threshold():
-    with open("../thresholds.json", "r") as file:
+    with open("/app/thresholds.json", "r") as file:
         threshold = json.load(file)
     return threshold
 
