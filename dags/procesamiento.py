@@ -74,6 +74,9 @@ def carga_datos_redshift(**kwargs):
 
     # subo el dataframe a la base de datos en redshift con los datos transformados
     df_transformado.to_sql(name='eventos_provinciales', con=conn, schema='lucasleone95_coderhouse', if_exists='append', index=False)
+    
+    # Cierro la conexión
+    conn.dispose()
 
     # Luego de subir los datos a la base de datos, verificamos los thresholds y enviamos un email si se supera
     procesar_datos()
@@ -134,5 +137,6 @@ def procesar_datos():
         destinatario = os.getenv("DESTINATARIO_EMAIL")
         enviar_alerta_por_email("Alerta de procesamiento:", "El número de casos sobrepasó el umbral de los 20.000 casos de enfermedades respiratorias agudas en Argentina", destinatario)
         logging.info("Sobrepaso de umbral, Se envió un email de alerta")
-                                
-    
+        
+    # Cierro el cursor
+    conn.dispose()
