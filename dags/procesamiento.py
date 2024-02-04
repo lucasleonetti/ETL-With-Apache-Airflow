@@ -1,6 +1,7 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import json
+import logging
 import smtplib
 import requests
 import pandas as pd
@@ -11,7 +12,6 @@ from sqlalchemy import create_engine, text
 import requests
 import pandas as pd
 import missingno as msno
-
 import matplotlib.pyplot as plt
 
 # llama a la API y obtengo los datos
@@ -75,15 +75,8 @@ def carga_datos_redshift(**kwargs):
     # subo el dataframe a la base de datos en redshift con los datos transformados
     df_transformado.to_sql(name='eventos_provinciales', con=conn, schema='lucasleone95_coderhouse', if_exists='append', index=False)
 
-    # consulto la base de datos para verificar que se haya subido correctamente
-    def run_query(sql):
-        result = conn.connect().execute((text(sql)))
-        return pd.DataFrame(result.fetchall(), columns=result.keys())
-
-    query_consult = """SELECT * FROM lucasleone95_coderhouse.eventos_provinciales LIMIT 10;"""
-
-    print(run_query(query_consult))
-    print("Datos cargados correctamente en la base de datos")
+    # Luego de subir los datos a la base de datos, verificamos los thresholds y enviamos un email si se supera
+    procesar_datos()
 
 def leer_threshold():
     with open("../thresholds.json", "r") as file:
@@ -112,7 +105,6 @@ def enviar_alerta_por_email(asunto,mensaje,destinatario):
     server.sendmail(mi_correo, destinatario, text)
     server.quit() 
     
-
 def procesar_datos():
      # importo las variables de entorno
     REDSHIFT_HOST = os.getenv("HOST")
@@ -139,6 +131,8 @@ def procesar_datos():
     # Luego de obtener la suma, verificamos los thresholds y enviamos un email si se supera
     threshold = leer_threshold()
     if suma_datos > threshold['maxCasosPorAnio']:
-        enviar_alerta_por_email("Alerta de procesamiento:", "El numero de casos sobrepaso el umbral de los 20.000 casos de enfermedades respiratorias agudas en Argentina","lucasleone95@gmail.com")
+        destinatario = os.getenv("DESTINATARIO_EMAIL")
+        enviar_alerta_por_email("Alerta de procesamiento:", "El número de casos sobrepasó el umbral de los 20.000 casos de enfermedades respiratorias agudas en Argentina", destinatario)
+        logging.info("Sobrepaso de umbral, Se envió un email de alerta")
                                 
     
