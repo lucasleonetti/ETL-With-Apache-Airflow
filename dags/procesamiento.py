@@ -74,9 +74,6 @@ def carga_datos_redshift(**kwargs):
 
     # subo el dataframe a la base de datos en redshift con los datos transformados
     df_transformado.to_sql(name='eventos_provinciales', con=conn, schema='lucasleone95_coderhouse', if_exists='append', index=False)
-    
-    # Cierro la conexión
-    conn.dispose()
 
     # Luego de subir los datos a la base de datos, verificamos los thresholds y enviamos un email si se supera
     procesar_datos()
@@ -117,26 +114,22 @@ def procesar_datos():
     REDSHIFT_DB = os.getenv("DBNAME")
 
     # conecto a la base de datos
-    conn = create_engine(f"postgresql://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}")
-    
-    # Creo un cursor para ejecutar la consulta
-    cursor = conn.cursor()
+    engine = create_engine(f"postgresql://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}")
     
     # consulta SQL que obtiene la cantidad de casos por anio
     query = """
     SELECT SUM(cantidad_casos) FROM eventos_provinciales
     """
     
-    # ejecuto la consulta
-    cursor.execute(query)
-    suma_datos = cursor.fetchone()[0]
-    
-    # Luego de obtener la suma, verificamos los thresholds y enviamos un email si se supera
-    threshold = leer_threshold()
-    if suma_datos > threshold['maxCasosPorAnio']:
-        destinatario = os.getenv("DESTINATARIO_EMAIL")
-        enviar_alerta_por_email("Alerta de procesamiento:", "El número de casos sobrepasó el umbral de los 20.000 casos de enfermedades respiratorias agudas en Argentina", destinatario)
-        logging.info("Sobrepaso de umbral, Se envió un email de alerta")
-        
-    # Cierro el cursor
-    conn.dispose()
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        suma_casos = result.scalar()
+
+        # Luego de obtener la suma, verificamos los thresholds y enviamos un email si se supera
+        threshold = leer_threshold()
+        if suma_casos > threshold['maxCasosPorAnio']:
+            destinatario = os.getenv("DESTINATARIO_EMAIL")
+            enviar_alerta_por_email("Alerta de procesamiento:", "El número de casos sobrepasó el umbral de los 20.000 casos de enfermedades respiratorias agudas en Argentina", destinatario)
+            logging.info("Sobrepaso de umbral, Se envió un email de alerta")
+        else:
+            logging.info("No se superó el umbral")
