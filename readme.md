@@ -24,7 +24,7 @@ El proyecto consta de los siguientes archivos y directorios:
 
 ## Variables de entorno
 
-En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` el cual contendra las credenciales de acceso a tu base de datos con el siguiente contenido:
+En el caso de que quieras ejecutar el proyecto en tu computadora, deberás definir las siguientes variables de entorno creando en el directorio raíz del proyecto un archivo `.env` el cual contendra las credenciales de acceso a tu base de datos y del controlador de envio de emails para las alertas, la direccion de email del destinatario que recibira la alerta. El archivo `.env` deberá tener el siguiente formato:
 
 ```bash
 # .env
@@ -33,6 +33,9 @@ POSTGRES_PASSWORD=ejemplo-password
 POSTGRES_DB=ejemplo-db
 POSTGRES_HOST=ejemplo-host
 POSTGRES_PORT=5432
+EMAIL=ejemplo-email
+PASSWORD_EMAIL=ejemplo-password
+DESTINATARIO_EMAIL=ejemplo-destinatario-email
 ```
 
 ## Flujo de trabajo
